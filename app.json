@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "Legeaftale",
+    "slug": "legeaftale",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "legeaftale",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ai.onspace.legeaftale"
+    },
+    "android": {
+      "package": "ai.onspace.legeaftale"
+    },
+    "plugins": ["expo-router"]
+  }
+}
