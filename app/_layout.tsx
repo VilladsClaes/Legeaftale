@@ -5,7 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ActivityProvider } from '@/contexts/ActivityContext';
 import { ScheduleProvider } from '@/contexts/ScheduleContext';
 import { colors } from '@/constants/theme';
-import { AlertProvider } from '@/template';
+import { AlertProvider } from '@/template/ui';
 
 export default function RootLayout() {
   return (

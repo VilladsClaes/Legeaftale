@@ -8,7 +8,7 @@ import { colors, radius, shadows, spacing, typography } from '@/constants/theme'
 import { useActivities } from '@/hooks/useActivities';
 import { useSchedule } from '@/hooks/useSchedule';
 import { dayLabel, fromDayKey, toDayKey } from '@/services/dateUtils';
-import { useAlert } from '@/template';
+import { useAlert } from '@/template/ui';
 
 const MAX_PER_DAY = 5;
 

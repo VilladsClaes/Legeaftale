@@ -1,75 +1,55 @@
-# Welcome to OnSpace AI
+# Legeaftale
 
-Onspace AI empowers anyone to turn ideas into powerful AI applications in minutes—no coding required. Our free, no-code platform enables effortless creation of custom AI apps; simply describe your vision and our agentic AI handles the rest. The onspace-app, built with React Native and Expo, demonstrates this capability—integrating popular third-party libraries to deliver seamless cross-platform performance across iOS, Android, and Web environments.
+En lille Expo/React Native-app til at planlægge op til 5 leg-aftaler om dagen med børnene.
+Alt gemmes lokalt på telefonen (AsyncStorage) — ingen login, ingen server, ingen dataindsamling.
 
-## Getting Started
-
-### 1. Install Dependencies
-
-```bash
-npm install
-# or
-yarn install
-```
-
-### 2. Start the Project
-
-- Start the development server (choose your platform):
+## Udvikling
 
 ```bash
-npm run start         # Start Expo development server
-npm run android       # Launch Android emulator
-npm run ios           # Launch iOS simulator
-npm run web           # Start the web version
+pnpm install
+pnpm start          # Expo dev-server (Expo Go / web)
+pnpm typecheck
+pnpm lint
 ```
 
-- Reset the project (clear cache, etc.):
+## Byg Android-app
+
+Kræver JDK 17+ og Android SDK (platform 36, build-tools 36, NDK 27.1) med `ANDROID_HOME` sat.
 
 ```bash
-npm run reset-project
+pnpm build:apk   # -> android/app/build/outputs/apk/release/app-release.apk   (til direkte installation)
+pnpm build:aab   # -> android/app/build/outputs/bundle/release/app-release.aab (til Google Play)
 ```
 
-### 3. Lint the Code
+`android/` genereres af `expo prebuild` og er ikke i git.
+
+### Signering
+
+Release-builds signeres med en upload-nøgle, hvis disse variabler er sat (som env-variabler
+eller i `~/.gradle/gradle.properties`); ellers bruges debug-nøglen (kun til test):
+
+```
+LEGEAFTALE_UPLOAD_STORE_FILE=/sti/til/upload.jks
+LEGEAFTALE_UPLOAD_STORE_PASSWORD=...
+LEGEAFTALE_UPLOAD_KEY_ALIAS=upload
+LEGEAFTALE_UPLOAD_KEY_PASSWORD=...
+```
+
+Opret en upload-nøgle (gem den og kodeordene sikkert — **aldrig i git**):
 
 ```bash
-npm run lint
+keytool -genkeypair -v -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 \
+  -alias upload -keystore upload.jks
 ```
 
-## Main Dependencies
+### GitHub Actions
 
-- React Native: 0.79.4
-- React: 19.0.0
-- Expo: ~53.0.12
-- Expo Router: ~5.1.0
-- Supabase: ^2.50.0
-- Other commonly used libraries:  
-  - @expo/vector-icons  
-  - react-native-paper  
-  - react-native-calendars  
-  - lottie-react-native  
-  - react-native-webview  
-  - and more
+`.github/workflows/android.yml` bygger APK + AAB ved push til `main`, tags `v*` eller manuelt
+(Actions → Android build → Run workflow). Filerne ligger som artifact på kørslen.
+Tilføj disse repository-secrets for at signere med upload-nøglen:
+`ANDROID_KEYSTORE_BASE64` (`base64 -w0 upload.jks`), `ANDROID_KEYSTORE_PASSWORD`,
+`ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`.
 
-For a full list of dependencies, see [package.json](./package.json).
+### Ny version
 
-## Development Tools
-
-- TypeScript: ~5.8.3
-- ESLint: ^9.25.0
-- @babel/core: ^7.25.2
-
-## Contributing
-
-1. Fork this repository
-2. Create a new branch (`git checkout -b main`)
-3. Commit your changes (`git commit -am 'Add new feature'`)
-4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is private ("private": true). For collaboration inquiries, please contact the author.
-
----
-
-Feel free to add project screenshots, API documentation, feature descriptions, or any other information as needed.
+Hæv `expo.version` og `expo.android.versionCode` i `app.json` før hver upload til Google Play.

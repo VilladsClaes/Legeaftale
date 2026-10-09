@@ -7,7 +7,7 @@ import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { colors, radius, shadows, spacing, typography } from '@/constants/theme';
 import { useActivities } from '@/hooks/useActivities';
 import { calendarService } from '@/services/calendarService';
-import { useAlert } from '@/template';
+import { useAlert } from '@/template/ui';
 
 export default function ActivityDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();

@@ -4,15 +4,44 @@
     "slug": "legeaftale",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
     "scheme": "legeaftale",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "ai.onspace.legeaftale"
+      "bundleIdentifier": "dk.villadsclaes.legeaftale"
     },
     "android": {
-      "package": "ai.onspace.legeaftale"
+      "package": "dk.villadsclaes.legeaftale",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#FF7A59"
+      },
+      "permissions": [],
+      "blockedPermissions": [
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
-    "plugins": ["expo-router"]
+    "web": {
+      "favicon": "./assets/images/favicon.ico"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#FFF8EC"
+        }
+      ],
+      "./plugins/withReleaseSigning",
+      "expo-font",
+      "expo-status-bar"
+    ]
   }
 }
