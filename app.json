@@ -39,6 +39,16 @@
           "backgroundColor": "#FFF8EC"
         }
       ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableMinifyInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true,
+            "useLegacyPackaging": true
+          }
+        }
+      ],
       "./plugins/withReleaseSigning",
       "expo-font",
       "expo-status-bar"
