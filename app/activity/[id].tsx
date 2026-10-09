@@ -121,7 +121,7 @@ export default function ActivityDetail() {
           <Ionicons name="information-circle" size={20} color={colors.primary} />
           <Text style={styles.infoText}>
             Hold inde på en leg i dagsvisningen for at fjerne den fra dagen. Du kan
-            også swipe til højre for at udskyde.
+            også trykke »Udskyd til i morgen« for at flytte den.
           </Text>
         </View>
       </ScrollView>
