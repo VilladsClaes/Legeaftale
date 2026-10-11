@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { colors, radius, shadows, spacing, typography } from '@/constants/theme';
 import { useChores } from '@/hooks/useChores';
-import { useAlert } from '@/template/ui';
+import { useAlert } from '@/template';
 
 const EMOJIS = [
   '🧹', '🍎', '💧', '🧼', '🛋️', '🧺', '🪥', '🧦',
