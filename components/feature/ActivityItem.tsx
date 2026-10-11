@@ -13,7 +13,8 @@ interface Props {
   onToggle: () => void;
   onPostpone: () => void;
   onLongPress?: () => void;
-  locked?: boolean;
+  /** When set, the leg is locked and this text explains how to unlock it. */
+  lockedLabel?: string;
 }
 
 export function ActivityItem({
@@ -22,11 +23,11 @@ export function ActivityItem({
   onToggle,
   onPostpone,
   onLongPress,
-  locked = false,
+  lockedLabel,
 }: Props) {
   const router = useRouter();
   const openDetail = () => router.push(`/activity/${activity.id}`);
-  const showLock = locked && !item.completed;
+  const showLock = !!lockedLabel && !item.completed;
 
   return (
     <View style={styles.outer}>
@@ -61,7 +62,7 @@ export function ActivityItem({
                   size={13}
                   color={colors.textOnPrimary}
                 />
-                <Text style={styles.lockChipText}>Lav opgave først</Text>
+                <Text style={styles.lockChipText}>{lockedLabel}</Text>
               </View>
             ) : null}
             <Pressable
@@ -83,6 +84,7 @@ export function ActivityItem({
           </View>
         </View>
         <Checkbox
+          locked={showLock}
           checked={item.completed}
           onToggle={onToggle}
           color={activity.color}

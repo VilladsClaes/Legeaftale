@@ -3,13 +3,18 @@ import React, { useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ActivityItem } from '@/components/feature/ActivityItem';
+import { ChoreItem } from '@/components/feature/ChoreItem';
+import { ChoreSlot } from '@/components/feature/ChoreSlot';
 import { DayNavigator } from '@/components/feature/DayNavigator';
 import { EmptyState } from '@/components/feature/EmptyState';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import { colors, radius, shadows, spacing, typography } from '@/constants/theme';
 import { useActivities } from '@/hooks/useActivities';
+import { useChoreSchedule } from '@/hooks/useChoreSchedule';
+import { useChores } from '@/hooks/useChores';
 import { useSchedule } from '@/hooks/useSchedule';
 import { addDays, dayLabel, toDayKey } from '@/services/dateUtils';
+import { buildDayPlan, DayEntry, LOCKED_NEEDS_CHORE } from '@/services/dayPlan';
 import { useAlert } from '@/template/ui';
 
 const MAX_PER_DAY = 5;
@@ -20,6 +25,8 @@ export default function HomeScreen() {
   const router = useRouter();
   const { byId } = useActivities();
   const { items, forDay, toggle, postpone, remove } = useSchedule();
+  const { byId: choreById } = useChores();
+  const chores = useChoreSchedule();
   const { showAlert } = useAlert();
 
   const dayKey = toDayKey(selected);
@@ -27,6 +34,61 @@ export default function HomeScreen() {
   const total = todays.length;
   const completed = todays.filter((t) => t.completed).length;
   const canAddMore = total < MAX_PER_DAY;
+  const plan = buildDayPlan(todays, chores.forDay(dayKey));
+  const addChore = () =>
+    router.push({ pathname: '/pick-chore', params: { dayKey } });
+
+  const onTogglePlay = (id: string, lockedLabel?: string) => {
+    if (lockedLabel) {
+      showAlert(
+        'Legen er låst',
+        lockedLabel === LOCKED_NEEDS_CHORE
+          ? 'Tilføj en opgave og lav den, så låses legen op.'
+          : 'Lav opgaven før legen, så låses den op.',
+      );
+      return;
+    }
+    toggle(id);
+  };
+
+  const onChoreLongPress = (id: string, title: string) => {
+    showAlert(
+      'Fjern opgave?',
+      `Vil du fjerne "${title}" fra ${dayLabel(selected).toLowerCase()}?`,
+      [
+        { text: 'Annuller', style: 'cancel' },
+        { text: 'Fjern', style: 'destructive', onPress: () => chores.remove(id) },
+      ],
+    );
+  };
+
+  const renderEntry = (entry: DayEntry) => {
+    if (entry.kind === 'chore-slot') return <ChoreSlot onPress={addChore} />;
+    if (entry.kind === 'chore') {
+      const chore = choreById(entry.item.choreId);
+      if (!chore) return null;
+      return (
+        <ChoreItem
+          item={entry.item}
+          chore={chore}
+          onToggle={() => chores.toggle(entry.item.id)}
+          onLongPress={() => onChoreLongPress(entry.item.id, chore.title)}
+        />
+      );
+    }
+    const activity = byId(entry.item.activityId);
+    if (!activity) return null;
+    return (
+      <ActivityItem
+        item={entry.item}
+        activity={activity}
+        lockedLabel={entry.lockedLabel}
+        onToggle={() => onTogglePlay(entry.item.id, entry.lockedLabel)}
+        onPostpone={() => onPostpone(entry.item.id)}
+        onLongPress={() => onLongPress(entry.item.id, activity.title)}
+      />
+    );
+  };
 
   const countsByDay = useMemo(() => {
     const map: Record<string, { total: number; completed: number }> = {};
@@ -102,8 +164,10 @@ export default function HomeScreen() {
       />
 
       <FlatList
-        data={todays}
-        keyExtractor={(it) => it.id}
+        data={plan}
+        keyExtractor={(entry) =>
+          entry.kind === 'chore-slot' ? 'chore-slot' : entry.item.id
+        }
         contentContainerStyle={{
           paddingHorizontal: spacing.lg,
           paddingTop: spacing.md,
@@ -121,19 +185,7 @@ export default function HomeScreen() {
             </View>
           ) : null
         }
-        renderItem={({ item }) => {
-          const activity = byId(item.activityId);
-          if (!activity) return null;
-          return (
-            <ActivityItem
-              item={item}
-              activity={activity}
-              onToggle={() => toggle(item.id)}
-              onPostpone={() => onPostpone(item.id)}
-              onLongPress={() => onLongPress(item.id, activity.title)}
-            />
-          );
-        }}
+        renderItem={({ item }) => renderEntry(item)}
         ListEmptyComponent={
           <EmptyState
             title="Ingen leg-aftaler endnu"
@@ -150,12 +202,19 @@ export default function HomeScreen() {
         ]}
       >
         <PrimaryButton
-          label={canAddMore ? 'Tilføj leg til dagen' : 'Dagen er fuld (5/5)'}
+          label={canAddMore ? 'Tilføj leg' : 'Fuld (5/5)'}
           icon="add-circle"
           onPress={() =>
             router.push({ pathname: '/pick-activity', params: { dayKey } })
           }
           disabled={!canAddMore}
+          style={{ flex: 1 }}
+        />
+        <PrimaryButton
+          label="Tilføj opgave"
+          icon="checkbox"
+          variant="secondary"
+          onPress={addChore}
           style={{ flex: 1 }}
         />
       </View>
@@ -238,6 +297,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.divider,
     flexDirection: 'row',
+    gap: spacing.sm,
     ...shadows.md,
   },
 });

@@ -7,26 +7,39 @@ interface Props {
   checked: boolean;
   onToggle: () => void;
   color?: string;
+  locked?: boolean;
 }
 
-export function Checkbox({ checked, onToggle, color = colors.primary }: Props) {
+export function Checkbox({
+  checked,
+  onToggle,
+  color = colors.primary,
+  locked = false,
+}: Props) {
+  const tint = locked ? colors.textSubtle : color;
   return (
     <Pressable
       hitSlop={12}
       onPress={onToggle}
       accessibilityRole="checkbox"
-      accessibilityState={{ checked }}
+      accessibilityState={{ checked, disabled: locked }}
       style={({ pressed }) => [
         styles.box,
         {
-          borderColor: color,
-          backgroundColor: checked ? color : 'transparent',
+          borderColor: tint,
+          backgroundColor: checked ? tint : 'transparent',
           opacity: pressed ? 0.75 : 1,
           transform: [{ scale: pressed ? 0.95 : 1 }],
         },
       ]}
     >
-      {checked ? <Ionicons name="checkmark" size={22} color="#fff" /> : <View />}
+      {checked ? (
+        <Ionicons name="checkmark" size={22} color="#fff" />
+      ) : locked ? (
+        <Ionicons name="lock-closed" size={18} color={tint} />
+      ) : (
+        <View />
+      )}
     </Pressable>
   );
 }
