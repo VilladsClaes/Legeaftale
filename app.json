@@ -51,7 +51,8 @@
         }
       ],
       "./plugins/withReleaseSigning",
-      "./plugins/withPluginRepositories"
+      "./plugins/withPluginRepositories",
+      "expo-web-browser"
     ]
   }
 }
