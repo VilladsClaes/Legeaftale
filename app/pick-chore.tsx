@@ -8,7 +8,7 @@ import { colors, radius, shadows, spacing, typography } from '@/constants/theme'
 import { useChores } from '@/hooks/useChores';
 import { useChoreSchedule } from '@/hooks/useChoreSchedule';
 import { dayLabel, fromDayKey, toDayKey } from '@/services/dateUtils';
-import { useAlert } from '@/template';
+import { useAlert } from '@/template/ui';
 
 export default function PickChoreScreen() {
   const router = useRouter();
